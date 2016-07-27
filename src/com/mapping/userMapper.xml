@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapping.userMapper">
+	<!--在select标签中编写查询的SQL语句， 设置select标签的id属性为getUser，id属性值必须是唯一的，不能够重复 使用parameterType属性指明查询时使用的参数类型，resultType属性指明查询返回的结果集类型 
+		resultType="com.domain.User"就表示将查询结果封装成一个User类的对象返回 User类就是users表所对应的实体类 -->
+	<!--根据id查询得到一个user对象 -->
+	<!-- 查询用户mapper -->
+	<select id="selectOneUser" parameterType="Long" resultType="com.domain.User">
+		select *
+		from user where id=#{id}
+	</select>
+	<select id="selectAllUser" resultType="com.domain.User">
+		select
+		id,userinfo,password from user
+	</select>
+	<!-- 插入用户mapper -->
+	<insert id="insertUser" parameterType="com.domain.User"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into
+		user(id,userinfo,password)
+		values(#{id},#{userinfo},#{password})
+	</insert>
+	<!-- 查询一个类型 -->
+	<select id="selectOneType" parameterType="String" resultType="com.domain.WorkType">
+		select * from worktype where type=#{type}
+	</select>
+	<select id="selectType" parameterType="Long" resultType="com.domain.WorkType">
+		select *
+		from worktype where id=#{id}
+	</select>
+	<!-- 查询全部类型 -->
+	<select id="selectAllType" resultType="com.domain.WorkType">
+		select
+		id,type from
+		worktype
+	</select>
+	<!-- 插入类型 -->
+	<insert id="insertType" parameterType="com.domain.WorkType">
+		insert into
+		worktype(id,type)
+		values(#{id},#{type})
+	</insert>
+	<!-- 查询特定用户任务类型 -->
+	<select id="selectUserType" parameterType="Long" resultMap="UseresultMap">
+		select *
+		from usertype
+		where user_id=#{id}
+	</select>
+	<resultMap type="com.domain.UserType" id="UseresultMap">
+		<id property="user_id" column="user_id" />
+		<result property="type_id" column="typr_id" />
+		<collection property="worktype" ofType="com.domain.WorkType"
+			column="type_id" select="getUserType"></collection>
+	</resultMap>
+	<select id="getUserType" parameterType="Long" resultType="com.domain.WorkType">
+		select
+		* from worktype where id=#{id}
+	</select>
+	<!-- 插入特定用户类型关联 -->
+	<insert id="insertUserType" parameterType="com.domain.UserType">
+		insert into
+		usertype(user_id,type_id) values(#{user_id},#{type_id})
+	</insert>
+	<!-- 查询全部任务记录 -->
+	<select id="selectMission" resultType="com.domain.Mission">
+		select * from mission
+
+	</select>
+	<!-- 插入任务记录 -->
+	<insert id="insertMission" parameterType="com.domain.Mission">
+		insert into
+		mission(user_id,type_id,time,content)
+		values(#{user_id},#{type_id},#{time},#{content})
+	</insert>
+	<update id="updateMission" parameterType="com.domain.Mission">
+		UPDATE mission SET
+		type_id =
+		#{type_id},content=#{content} WHERE id= #{id}
+	</update>
+	<delete id="deleteUserType" parameterType="com.domain.UserType">
+		delete from usertype
+		where user_id=#{user_id} and type_id=#{type_id}
+	</delete>
+	<delete id="deleteMission" parameterType="com.domain.Mission">
+		delete from mission
+		where user_id=#{user_id} and type_id=#{type_id}
+	</delete>
+</mapper>
